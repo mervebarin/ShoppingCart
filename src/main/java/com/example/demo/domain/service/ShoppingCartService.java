@@ -45,23 +45,24 @@ public class ShoppingCartService {
         print(shoppingCart);
         Response response = new Response();
         response.setStatus("success");
+        response.setTotalPriceOfShoppingCart(BigDecimal.valueOf(shoppingCart.getPrice()));
         return response;
     }
 
-    private void addItem(ShoppingCart shoppingCart, Product product, Integer quantity) {
+    public void addItem(ShoppingCart shoppingCart, Product product, Integer quantity) {
         HashMap<Product, Integer> shoppingCartBasket = shoppingCart.getBasket();
         shoppingCartBasket.put(product, quantity);
         shoppingCart.setBasket(shoppingCartBasket);
     }
 
-    private void applyDiscount(ShoppingCart shoppingCart) {
+    public void applyDiscount(ShoppingCart shoppingCart) {
         BigDecimal discountAmount = campaignService.getApplicableCampaignAmount(shoppingCart);
         shoppingCart.setCampaignDiscount(discountAmount.doubleValue());
         shoppingCart.setPrice(BigDecimal.valueOf(shoppingCart.getPrice()).subtract(discountAmount).doubleValue());
         shoppingCart.setCampaignDiscountApplied(true);
     }
 
-    private void applyCoupon(ShoppingCart shoppingCart, Coupon coupon) {
+    public void applyCoupon(ShoppingCart shoppingCart, Coupon coupon) {
         validateCampaignDiscountApplied(shoppingCart.isCampaignDiscountApplied());
         BigDecimal totalPriceOfCart = BigDecimal.valueOf(shoppingCart.getPrice());
         BigDecimal discountAmount = couponService.getApplicableCouponAmount(coupon, totalPriceOfCart);
@@ -88,12 +89,13 @@ public class ShoppingCartService {
         return BigDecimal.valueOf(productBigDecimalEntry.getKey().getPrice()).multiply(BigDecimal.valueOf(productBigDecimalEntry.getValue()));
     }
 
-    private void print(ShoppingCart shoppingCart) {
+    public void print(ShoppingCart shoppingCart) {
         BigDecimal initialCartPrice = BigDecimal.valueOf(getInitialCartPrice(shoppingCart.getBasket()));
         BigDecimal campaignDiscountAmount = BigDecimal.valueOf(shoppingCart.getCampaignDiscount());
         BigDecimal couponDiscountAmount = BigDecimal.valueOf(shoppingCart.getCouponDiscount());
 
         Map<Category, List<Product>> groupedProductsByCategories = shoppingCart.getBasket().keySet().stream().collect(groupingBy(Product::getCategory));
+        System.out.println("\n -------------ShoppingCart Details------------- \n");
         groupedProductsByCategories.forEach((category, products) -> products.forEach(product -> System.out.println(printProduct(product, shoppingCart.getBasket().get(product)))));
 
         System.out.println("TotalPriceOfCartBeforeDiscounts: " + initialCartPrice + ", TotalDiscountAmount: " + campaignDiscountAmount.add(couponDiscountAmount));

@@ -13,6 +13,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,8 +32,9 @@ public class RestShoppingCartControllerTest {
     public void should_prepare_shopping_cart_for_checkout() {
         //given
         HashMap<Long, Integer> productIdQuantityMap = new HashMap<>();
-        productIdQuantityMap.put(1L, 1);
-        productIdQuantityMap.put(2L, 3);
+        productIdQuantityMap.put(1L, 3);
+        productIdQuantityMap.put(2L, 1);
+        productIdQuantityMap.put(3L, 1);
         PrepareShoppingCartRequest prepareShoppingCartRequest = new PrepareShoppingCartRequest();
 
         Coupon coupon = new Coupon(10.0, 5.0, DiscountType.AMOUNT);
@@ -51,5 +53,6 @@ public class RestShoppingCartControllerTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         Response response = responseEntity.getBody();
         assertThat(response.getStatus()).isEqualTo("success");
+        assertThat((response.getTotalPriceOfShoppingCart())).isEqualTo(BigDecimal.valueOf(73.47));
     }
 }

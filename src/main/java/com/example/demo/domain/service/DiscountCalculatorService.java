@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 public class DiscountCalculatorService {
 
     public BigDecimal calculateDiscountAmount(BigDecimal price, BigDecimal discountAmount, DiscountType discountType) {
-        if (DiscountType.AMOUNT.equals(discountType)) {
+        if (DiscountType.AMOUNT.equals(discountType) && isDiscountAmountValid(price, discountAmount)) {
             return discountAmount;
         }
 
@@ -17,5 +17,9 @@ public class DiscountCalculatorService {
             return price.multiply(discountAmount).divide(BigDecimal.valueOf(100));
         }
         return BigDecimal.ZERO;
+    }
+
+    private boolean isDiscountAmountValid(BigDecimal price, BigDecimal discountAmount) {
+        return discountAmount.compareTo(price) < 0;
     }
 }

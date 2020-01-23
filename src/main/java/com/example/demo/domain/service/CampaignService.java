@@ -20,33 +20,38 @@ import static java.util.stream.Collectors.groupingBy;
 public class CampaignService {
 
     private final CampaignRepository campaignRepository;
-    private final ProductService productService;
     private final DiscountCalculatorService discountCalculatorService;
 
     public CampaignService(CampaignRepository campaignRepository,
-                           ProductService productService,
                            DiscountCalculatorService discountCalculatorService) {
         this.campaignRepository = campaignRepository;
-        this.productService = productService;
         this.discountCalculatorService = discountCalculatorService;
     }
 
     public BigDecimal getApplicableCampaignAmount(ShoppingCart shoppingCart) {
-        List<String> cartCategoryList = getShoppingCartCategoryList(shoppingCart.getBasket());
-        List<Campaign> campaignList = campaignRepository.findByCategory_TitleIn(cartCategoryList);
-        List<BigDecimal> discountPriceList = new ArrayList<>(Collections.emptyList());
+        List<String> cartCategoryList = getBasketCategoryList(shoppingCart.getBasket());
+        List<Campaign> campaignList = retrieveCampaignListByCategory(cartCategoryList);
+        List<BigDecimal> applicableDiscountPriceList = new ArrayList<>(Collections.emptyList());
         campaignList
                 .stream()
                 .filter(campaign -> isProductCountValidForCampaign(shoppingCart, campaign))
                 .collect(groupingBy(Campaign::getCategory))
-                .forEach((category, campaignListOfCategory) -> discountPriceList.add(findMaximumDiscountAmountForCategory(shoppingCart, campaignListOfCategory)));
-        return discountPriceList.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+                .forEach((category, campaignListOfCategory) ->
+                        applicableDiscountPriceList.add(findMaximumDiscountAmountForCategory(shoppingCart, campaignListOfCategory)));
+        return applicableDiscountPriceList.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private List<String> getShoppingCartCategoryList(HashMap<Product, Integer> basket) {
-        List<String> shoppingCartCategoryList = new ArrayList<>(Collections.emptyList());
-        basket.keySet().forEach(product -> shoppingCartCategoryList.addAll(productService.getProductCategoryList(shoppingCartCategoryList, product.getCategory())));
-        return shoppingCartCategoryList;
+    private List<String> getBasketCategoryList(HashMap<Product, Integer> basket) {
+        List<String> basketCategoryList = new ArrayList<>(Collections.emptyList());
+        basket.keySet().forEach(product -> {
+            String categoryTitle = product.getCategory().getTitle();
+            basketCategoryList.add(categoryTitle);
+        });
+        return basketCategoryList.stream().distinct().collect(Collectors.toList());
+    }
+
+    private List<Campaign> retrieveCampaignListByCategory(List<String> cartCategoryList) {
+        return campaignRepository.findByCategory_TitleIn(cartCategoryList);
     }
 
     private boolean isProductCountValidForCampaign(ShoppingCart shoppingCart, Campaign campaign) {
@@ -58,7 +63,7 @@ public class CampaignService {
         return basket
                 .keySet()
                 .stream()
-                .filter(product -> categoryFilter(category, product))
+                .filter(product -> category.getTitle().equals(product.getCategory().getTitle()))
                 .map(basket::get)
                 .reduce(0, Integer::sum);
     }
@@ -81,14 +86,8 @@ public class CampaignService {
         return basket
                 .keySet()
                 .stream()
-                .filter(product -> categoryFilter(category, product))
+                .filter(product -> category.getTitle().equals(product.getCategory().getTitle()))
                 .map(product -> BigDecimal.valueOf(product.getPrice()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    private boolean categoryFilter(Category category, Product product) {
-        return productService.getProductCategoryList(new ArrayList<>(Collections.emptyList()), product.getCategory())
-                .stream()
-                .anyMatch(productCategoryTitle -> productCategoryTitle.equals(category.getTitle()));
     }
 }

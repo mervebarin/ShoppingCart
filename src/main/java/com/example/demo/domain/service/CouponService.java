@@ -26,7 +26,7 @@ public class CouponService {
     }
 
     private void validateCouponApplicable(BigDecimal totalPriceOfCart, BigDecimal minimumPurchasePrice, BigDecimal couponPrice) {
-        if (totalPriceOfCart.compareTo(minimumPurchasePrice) < 0) {
+        if (totalPriceOfCart.compareTo(minimumPurchasePrice) <= 0) {
             throw new BusinessException("Shopping cart price for this coupon is: " + couponPrice);
         }
     }

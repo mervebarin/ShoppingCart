@@ -1,8 +1,11 @@
 package com.example.demo.domain.service;
 
+import com.example.demo.application.response.Response;
+import com.example.demo.domain.exception.BusinessException;
 import com.example.demo.domain.model.entity.Category;
 import com.example.demo.domain.model.entity.Coupon;
 import com.example.demo.domain.model.entity.Product;
+import com.example.demo.domain.model.entity.ShoppingCart;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,9 +64,23 @@ public class ShoppingCartServiceTest {
         when(couponService.getApplicableCouponAmount(any(Coupon.class), any())).thenReturn(BigDecimal.ONE);
 
         //when
-        Throwable throwable = catchThrowable(() -> shoppingCartService.prepareShoppingCartForCheckout(productIdQuantityMap, coupon));
+        Response response = shoppingCartService.prepareShoppingCartForCheckout(productIdQuantityMap, coupon);
 
         //then
-        assertThat(throwable).isNull();
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo("success");
+    }
+
+    @Test
+    public void should_throw_exception_when_apply_coupon_calls_before_campaign_discount() {
+        //given
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setCampaignDiscountApplied(false);
+
+        //when
+        Throwable throwable = catchThrowable(() -> shoppingCartService.applyCoupon(shoppingCart, new Coupon()));
+
+        //then
+        assertThat(throwable).isNotNull().isInstanceOf(BusinessException.class).hasMessage("Campaign discount should apply first.");
     }
 }
