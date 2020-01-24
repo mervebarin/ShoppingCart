@@ -16,12 +16,11 @@ public class CouponService {
         this.discountCalculatorService = discountCalculatorService;
     }
 
-    public BigDecimal getApplicableCouponAmount(Coupon coupon, BigDecimal totalPriceOfCart) {
-        BigDecimal minimumPurchasePrice = BigDecimal.valueOf(coupon.getMinimumPurchasePrice());
-        BigDecimal couponPrice = BigDecimal.valueOf(coupon.getCouponPrice());
+    public BigDecimal getApplicableCouponAmount(Coupon coupon, Double totalPriceOfCart) {
         DiscountType discountType = coupon.getDiscountType();
+        Double couponPrice = coupon.getCouponPrice();
 
-        validateCouponApplicable(totalPriceOfCart, minimumPurchasePrice, couponPrice);
+        validateCouponApplicable(BigDecimal.valueOf(totalPriceOfCart), BigDecimal.valueOf(coupon.getMinimumPurchasePrice()), BigDecimal.valueOf(couponPrice));
         return discountCalculatorService.calculateDiscountAmount(totalPriceOfCart, couponPrice, discountType);
     }
 

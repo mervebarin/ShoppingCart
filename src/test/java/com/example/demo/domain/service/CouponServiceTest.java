@@ -31,13 +31,13 @@ public class CouponServiceTest {
     @Test
     public void should_get_applicable_coupon_amount_when_total_price_of_cart_is_bigger_than_min_purchase_price() {
         //given
-        final double minPurchaseAmount = 50.0;
-        final double couponPrice = 10.0;
-        final BigDecimal totalPriceOfCart = BigDecimal.valueOf(100.0);
+        final double minPurchaseAmount = 50;
+        final double couponPrice = 10;
+        final double totalPriceOfCart = 100;
 
         Coupon coupon = new Coupon(minPurchaseAmount, couponPrice, DiscountType.AMOUNT);
 
-        when(discountCalculatorService.calculateDiscountAmount(totalPriceOfCart, BigDecimal.valueOf(couponPrice), DiscountType.AMOUNT)).thenReturn(BigDecimal.TEN);
+        when(discountCalculatorService.calculateDiscountAmount(totalPriceOfCart, couponPrice, DiscountType.AMOUNT)).thenReturn(BigDecimal.TEN);
 
         //when
         BigDecimal applicableCouponAmount = couponService.getApplicableCouponAmount(coupon, totalPriceOfCart);
@@ -46,15 +46,15 @@ public class CouponServiceTest {
         assertThat(applicableCouponAmount).isNotNull();
         assertThat(applicableCouponAmount).isEqualTo(BigDecimal.TEN);
 
-        verify(discountCalculatorService).calculateDiscountAmount(totalPriceOfCart, BigDecimal.valueOf(couponPrice), DiscountType.AMOUNT);
+        verify(discountCalculatorService).calculateDiscountAmount(totalPriceOfCart, couponPrice, DiscountType.AMOUNT);
     }
 
     @Test
     public void should_throw_exception_when_coupon_price_is_less_than_total_price_of_cart() {
         //given
-        final double minPurchaseAmount = 50.0;
-        final double couponPrice = 10.0;
-        final BigDecimal totalPriceOfCart = BigDecimal.TEN;
+        final double minPurchaseAmount = 50;
+        final double couponPrice = 10;
+        final double totalPriceOfCart = 10;
 
         Coupon coupon = new Coupon(minPurchaseAmount, couponPrice, DiscountType.AMOUNT);
 
@@ -69,9 +69,9 @@ public class CouponServiceTest {
     @Test
     public void should_throw_exception_when_coupon_price_is_equal_to_total_price_of_cart() {
         //given
-        final double minPurchaseAmount = 10.0;
-        final double couponPrice = 10.0;
-        final BigDecimal totalPriceOfCart = BigDecimal.TEN;
+        final double minPurchaseAmount = 10;
+        final double couponPrice = 10;
+        final double totalPriceOfCart = 10;
 
         Coupon coupon = new Coupon(minPurchaseAmount, couponPrice, DiscountType.AMOUNT);
 

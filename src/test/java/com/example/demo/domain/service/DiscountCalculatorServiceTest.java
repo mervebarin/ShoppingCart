@@ -23,8 +23,8 @@ public class DiscountCalculatorServiceTest {
     @Test
     public void should_calculate_discount_for_discount_type_rate() {
         //given
-        final BigDecimal price = BigDecimal.valueOf(15);
-        final BigDecimal discountAmount = BigDecimal.valueOf(3);
+        final double price = 15;
+        final double discountAmount = 3;
 
         //when
         BigDecimal calculatedDiscountAmount = discountCalculatorService.calculateDiscountAmount(price, discountAmount, DiscountType.RATE);
@@ -37,22 +37,22 @@ public class DiscountCalculatorServiceTest {
     @Test
     public void should_calculate_discount_for_discount_type_amount() {
         //given
-        final BigDecimal price = BigDecimal.valueOf(15);
-        final BigDecimal discountAmount = BigDecimal.valueOf(3);
+        final double price = 15;
+        final double discountAmount = 3;
 
         //when
         BigDecimal calculatedDiscountAmount = discountCalculatorService.calculateDiscountAmount(price, discountAmount, DiscountType.AMOUNT);
 
         //then
         assertThat(calculatedDiscountAmount).isNotNull();
-        assertThat(calculatedDiscountAmount).isEqualTo(BigDecimal.valueOf(3));
+        assertThat(calculatedDiscountAmount).isEqualTo(BigDecimal.valueOf(3.0));
     }
 
     @Test
     public void should_return_zero_when_discount_type_unknown() {
         //given
-        final BigDecimal price = BigDecimal.valueOf(15);
-        final BigDecimal discountAmount = BigDecimal.valueOf(3);
+        final double price = 15;
+        final double discountAmount = 3;
 
         //when
         BigDecimal calculatedDiscountAmount = discountCalculatorService.calculateDiscountAmount(price, discountAmount, null);
@@ -64,8 +64,8 @@ public class DiscountCalculatorServiceTest {
     @Test
     public void should_return_zero_when_discount_amount_is_bigger_than_price() {
         //given
-        final BigDecimal price = BigDecimal.valueOf(15);
-        final BigDecimal discountAmount = BigDecimal.valueOf(20);
+        final double price = 15;
+        final double discountAmount = 20;
 
         //when
         BigDecimal calculatedDiscountAmount = discountCalculatorService.calculateDiscountAmount(price, discountAmount, null);

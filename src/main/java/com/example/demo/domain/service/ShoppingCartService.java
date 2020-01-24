@@ -64,8 +64,7 @@ public class ShoppingCartService {
 
     public void applyCoupon(ShoppingCart shoppingCart, Coupon coupon) {
         validateCampaignDiscountApplied(shoppingCart.isCampaignDiscountApplied());
-        BigDecimal totalPriceOfCart = BigDecimal.valueOf(shoppingCart.getPrice());
-        BigDecimal discountAmount = couponService.getApplicableCouponAmount(coupon, totalPriceOfCart);
+        BigDecimal discountAmount = couponService.getApplicableCouponAmount(coupon, shoppingCart.getPrice());
         shoppingCart.setCouponDiscount(discountAmount.doubleValue());
         shoppingCart.setPrice(BigDecimal.valueOf(shoppingCart.getPrice()).subtract(discountAmount).doubleValue());
     }

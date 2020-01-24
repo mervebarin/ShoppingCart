@@ -8,13 +8,13 @@ import java.math.BigDecimal;
 @Service
 public class DiscountCalculatorService {
 
-    public BigDecimal calculateDiscountAmount(BigDecimal price, BigDecimal discountAmount, DiscountType discountType) {
-        if (DiscountType.AMOUNT.equals(discountType) && isDiscountAmountValid(price, discountAmount)) {
-            return discountAmount;
+    public BigDecimal calculateDiscountAmount(double price, double discountAmount, DiscountType discountType) {
+        if (DiscountType.AMOUNT.equals(discountType) && isDiscountAmountValid(BigDecimal.valueOf(price), BigDecimal.valueOf(discountAmount))) {
+            return BigDecimal.valueOf(discountAmount);
         }
 
         if (DiscountType.RATE.equals(discountType)) {
-            return price.multiply(discountAmount).divide(BigDecimal.valueOf(100));
+            return BigDecimal.valueOf(price).multiply(BigDecimal.valueOf(discountAmount)).divide(BigDecimal.valueOf(100));
         }
         return BigDecimal.ZERO;
     }

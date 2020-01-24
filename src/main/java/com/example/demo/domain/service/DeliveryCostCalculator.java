@@ -12,7 +12,7 @@ public class DeliveryCostCalculator {
     private final double costPerProduct;
     private final double fixedCost;
 
-    public DeliveryCostCalculator(Double costPerDelivery, Double costPerProduct, double fixedCost) {
+    public DeliveryCostCalculator(double costPerDelivery, double costPerProduct, double fixedCost) {
         this.costPerDelivery = costPerDelivery;
         this.costPerProduct = costPerProduct;
         this.fixedCost = fixedCost;

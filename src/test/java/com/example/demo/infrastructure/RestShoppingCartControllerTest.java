@@ -53,6 +53,6 @@ public class RestShoppingCartControllerTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         Response response = responseEntity.getBody();
         assertThat(response.getStatus()).isEqualTo("success");
-        assertThat((response.getTotalPriceOfShoppingCart())).isEqualTo(BigDecimal.valueOf(73.47));
+        assertThat((response.getTotalPriceOfShoppingCart())).isEqualTo(BigDecimal.valueOf(73.1215));
     }
 }

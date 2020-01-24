@@ -77,17 +77,21 @@ public class CampaignService {
     }
 
     private BigDecimal getCampaignAmountForShoppingCart(ShoppingCart shoppingCart, Campaign campaign) {
-        BigDecimal campaignAmount = BigDecimal.valueOf(campaign.getCampaignPrice());
-        BigDecimal totalProductPriceWithinCategory = getTotalProductPriceWithinCategory(shoppingCart.getBasket(), campaign.getCategory());
-        return discountCalculatorService.calculateDiscountAmount(totalProductPriceWithinCategory, campaignAmount, campaign.getDiscountType());
+        double totalProductPriceWithinCategory = getTotalProductPriceWithinCategory(shoppingCart.getBasket(), campaign.getCategory());
+        return discountCalculatorService.calculateDiscountAmount(totalProductPriceWithinCategory, campaign.getCampaignPrice(), campaign.getDiscountType());
     }
 
-    private BigDecimal getTotalProductPriceWithinCategory(HashMap<Product, Integer> basket, Category category) {
+    private double getTotalProductPriceWithinCategory(HashMap<Product, Integer> basket, Category category) {
         return basket
                 .keySet()
                 .stream()
                 .filter(product -> category.getTitle().equals(product.getCategory().getTitle()))
-                .map(product -> BigDecimal.valueOf(product.getPrice()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .map(product -> {
+                    BigDecimal productUnitPrice = BigDecimal.valueOf(product.getPrice());
+                    BigDecimal productQuantity = BigDecimal.valueOf(basket.get(product));
+                    return productUnitPrice.multiply(productQuantity);
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .doubleValue();
     }
 }

@@ -53,18 +53,23 @@ public class CampaignServiceTest {
         basket.put(almond, 1);
         basket.put(shirt, 1);
 
-        Campaign foodCampaign = new Campaign(foodCategory, 10.0, BigDecimal.valueOf(2), DiscountType.RATE);
-        Campaign clothCampaign = new Campaign(clothCategory, 5.0, BigDecimal.ONE, DiscountType.RATE);
+        Campaign firstFoodCampaign = new Campaign(foodCategory, 10.0, BigDecimal.valueOf(2), DiscountType.RATE);
+        Campaign secondFoodCampaign = new Campaign(foodCategory, 1.0, BigDecimal.valueOf(2), DiscountType.AMOUNT);
+        Campaign firstClothCampaign = new Campaign(clothCategory, 5.0, BigDecimal.ONE, DiscountType.RATE);
+        Campaign secondClothCampaign = new Campaign(clothCategory, 5.0, BigDecimal.ONE, DiscountType.AMOUNT);
 
-        List<Campaign> campaignList = Arrays.asList(clothCampaign, foodCampaign);
+        List<Campaign> campaignList = Arrays.asList(firstFoodCampaign, secondFoodCampaign, firstClothCampaign, secondClothCampaign);
 
         when(campaignRepository.findByCategory_TitleIn(any())).thenReturn(campaignList);
-        when(discountCalculatorService.calculateDiscountAmount(any(), any(), any())).thenReturn(BigDecimal.valueOf(2.447));
+        when(discountCalculatorService.calculateDiscountAmount(24.47, 10, DiscountType.RATE)).thenReturn(BigDecimal.valueOf(2.447));
+        when(discountCalculatorService.calculateDiscountAmount(24.47, 1, DiscountType.AMOUNT)).thenReturn(BigDecimal.ONE);
+        when(discountCalculatorService.calculateDiscountAmount(75, 5, DiscountType.RATE)).thenReturn(BigDecimal.valueOf(3.75));
+        when(discountCalculatorService.calculateDiscountAmount(75, 5, DiscountType.AMOUNT)).thenReturn(BigDecimal.valueOf(5));
 
         //when
         BigDecimal applicableCampaignAmount = campaignService.getApplicableCampaignAmount(shoppingCart);
 
         //then
-        assertThat(applicableCampaignAmount).isEqualTo(BigDecimal.valueOf(4.894));
+        assertThat(applicableCampaignAmount).isEqualTo(BigDecimal.valueOf(7.447));
     }
 }
